@@ -140,6 +140,79 @@ pip install -r requirements.txt
 
 ## 🔄 Workflow
 
+```
+┌──────────────────────────────────────────────┐
+│          START: Air Quality Pipeline          │
+└──────────────────────────────────────────────┘
+                    │
+                    ▼
+     ┌────────────────────────────────────┐
+     │ Initialize components:              │
+     │ - AirQualityDataFetcher             │
+     │ - DataPreprocessor                  │
+     │ - ModelManager                      │
+     │ - AirQualityForecaster              │
+     └────────────────────────────────────┘
+                    │
+        [If drive_mount_path is provided]
+                    │
+                    ▼
+        ┌──────────────────────────────┐
+        │ Mount Google Drive (Colab)   │
+        └──────────────────────────────┘
+                    │
+                    ▼
+     ┌────────────────────────────────────┐
+     │ Step 1: Fetch and preprocess data  │
+     ├────────────────────────────────────┤
+     │ a. Fetch all pollutant data        │
+     │    (pm25, pm10, co, no2, o3, so2)  │
+     │ b. Merge pollutant DataFrames      │
+     │ c. Interpolate and clean data      │
+     │ d. Remove today's data             │
+     │ e. Reorder columns                 │
+     └────────────────────────────────────┘
+                    │
+                    ▼
+     ┌────────────────────────────────────┐
+     │ Step 2: Retrain all models         │
+     ├────────────────────────────────────┤
+     │ For each pollutant:                │
+     │  → Load model, params, scaler      │
+     │  → Create supervised data          │
+     │  → Add lag features                │
+     │  → Retrain LSTM model              │
+     │  → Save retrained model            │
+     └────────────────────────────────────┘
+                    │
+                    ▼
+     ┌────────────────────────────────────┐
+     │ Step 3: Generate forecasts         │
+     ├────────────────────────────────────┤
+     │ For each pollutant:                │
+     │  → Load retrained model            │
+     │  → Create lag data                 │
+     │  → Sequential forecasting loop     │
+     │     - Predict next value           │
+     │     - Inverse scale result         │
+     │     - Append new prediction        │
+     │     - Retrain model each step      │
+     └────────────────────────────────────┘
+                    │
+                    ▼
+     ┌────────────────────────────────────┐
+     │ Step 4: Return Results             │
+     ├────────────────────────────────────┤
+     │ → Return preprocessed data (df)    │
+     │ → Return forecast results          │
+     └────────────────────────────────────┘
+                    │
+                    ▼
+┌──────────────────────────────────────────────┐
+│                    END                        │
+└──────────────────────────────────────────────┘
+```
+
 1. **Data Fetching**: Retrieves air quality data from API
 2. **Preprocessing**: Cleans, merges, and prepares data
 3. **Model Retraining**: Retrains LSTM models with latest data
