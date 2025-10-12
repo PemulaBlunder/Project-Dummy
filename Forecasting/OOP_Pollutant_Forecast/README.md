@@ -142,16 +142,16 @@ pip install -r requirements.txt
 
 ```
 ┌──────────────────────────────────────────────┐
-│          START: Air Quality Pipeline          │
+│          START: Air Quality Pipeline         │
 └──────────────────────────────────────────────┘
                     │
                     ▼
      ┌────────────────────────────────────┐
-     │ Initialize components:              │
-     │ - AirQualityDataFetcher             │
-     │ - DataPreprocessor                  │
-     │ - ModelManager                      │
-     │ - AirQualityForecaster              │
+     │ Initialize components:             │
+     │ - AirQualityDataFetcher            │
+     │ - DataPreprocessor                 │
+     │ - ModelManager                     │
+     │ - AirQualityForecaster             │
      └────────────────────────────────────┘
                     │
         [If drive_mount_path is provided]
@@ -209,7 +209,7 @@ pip install -r requirements.txt
                     │
                     ▼
 ┌──────────────────────────────────────────────┐
-│                    END                        │
+│                    END                       │
 └──────────────────────────────────────────────┘
 ```
 
