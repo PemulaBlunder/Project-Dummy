@@ -505,3 +505,18 @@ if __name__ == "__main__":
     for pollutant, forecast_values in forecasts.items():
         print(f"{pollutant}: {len(forecast_values)} forecast values")
         print(f"  Sample values: {forecast_values[:5]}...")
+        
+    # --- Save outputs ---
+    output_dir = "/content/drive/MyDrive/Pengmas/Model/Output"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Save df_final to JSON
+    df_path = os.path.join(output_dir, "df_final.json")
+    df_final.to_json(df_path, orient="records", indent=2)
+    
+    # Save forecasts to JSON
+    forecast_path = os.path.join(output_dir, "forecasts.json")
+    with open(forecast_path, "w") as f:
+        json.dump(forecasts, f, indent=2)
+    
+    print(f"\nData saved to:\n- {df_path}\n- {forecast_path}")
