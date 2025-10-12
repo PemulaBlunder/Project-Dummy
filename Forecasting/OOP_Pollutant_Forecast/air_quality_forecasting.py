@@ -104,6 +104,7 @@ class DataPreprocessor:
     def remove_today_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """Remove today's data from the DataFrame."""
         today_wib = datetime.now(self.wib).date()
+        print(f"\nToday date: {today_wib}")
         df['day'] = pd.to_datetime(df['day'], format='%Y-%m-%d')
         today = pd.to_datetime(today_wib)
         
@@ -217,7 +218,7 @@ class ModelManager:
             verbose=1
         )
         
-        print(f"✅ Retraining completed for {pollutant}! Total samples: {len(df_supervised_final)}")
+        print(f"Retraining completed for {pollutant}! Total samples: {len(df_supervised_final)}")
         
         return retrained_model, original_scaler, df_supervised_final
     
@@ -226,7 +227,7 @@ class ModelManager:
         model_name = f"{pollutant}_retrained.keras"
         save_path = os.path.join(self.retrained_dir, model_name)
         model.save(save_path)
-        print(f"✅ Retrained model saved as: {save_path}")
+        print(f"Retrained model saved as: {save_path}")
         return save_path
 
 
@@ -391,29 +392,29 @@ class AirQualityPipeline:
         try:
             from google.colab import drive
             drive.mount(self.drive_mount_path)
-            print("✅ Google Drive mounted successfully")
+            print("Google Drive mounted successfully")
         except ImportError:
-            print("⚠️ Google Colab not detected, skipping drive mount")
+            print("Google Colab not detected, skipping drive mount")
     
     def fetch_and_preprocess_data(self) -> pd.DataFrame:
         """Fetch and preprocess air quality data."""
-        print("🔄 Fetching air quality data...")
+        print("Fetching air quality data...")
         data_dict = self.data_fetcher.fetch_all_data()
         
-        print("🔄 Preprocessing data...")
+        print("Preprocessing data...")
         df_final = self.preprocessor.preprocess_data(data_dict)
         
         return df_final
     
     def retrain_all_models(self, df_final: pd.DataFrame) -> Dict[str, str]:
         """Retrain all pollutant models."""
-        print("🔄 Retraining all models...")
+        print("Retraining all models...")
         retrained_models = {}
         
         pollutants = df_final.columns.tolist()
         
         for pollutant in pollutants:
-            print(f"🔄 Retraining {pollutant} model...")
+            print(f"Retraining {pollutant} model...")
             
             # Prepare data
             data_tis = df_final[pollutant].copy()
@@ -436,13 +437,13 @@ class AirQualityPipeline:
     
     def generate_forecasts(self, df_final: pd.DataFrame, num_steps: int = 14) -> Dict[str, List]:
         """Generate forecasts for all pollutants."""
-        print(f"🔄 Generating {num_steps}-day forecasts...")
+        print(f"Generating {num_steps}-day forecasts...")
         forecast_dict = {}
         
         pollutants = df_final.columns.tolist()
         
         for pollutant in pollutants:
-            print(f"🔄 Forecasting {pollutant}...")
+            print(f"Forecasting {pollutant}...")
             
             # Prepare data
             data_tis = df_final[pollutant].copy()
@@ -475,7 +476,7 @@ class AirQualityPipeline:
     
     def run_complete_pipeline(self, num_forecast_days: int = 14) -> Tuple[pd.DataFrame, Dict[str, List]]:
         """Run the complete air quality forecasting pipeline."""
-        print("🚀 Starting Air Quality Forecasting Pipeline...")
+        print("Starting Air Quality Forecasting Pipeline...")
         
         # Step 1: Fetch and preprocess data
         df_final = self.fetch_and_preprocess_data()
@@ -486,7 +487,7 @@ class AirQualityPipeline:
         # Step 3: Generate forecasts
         forecasts = self.generate_forecasts(df_final, num_forecast_days)
         
-        print("✅ Pipeline completed successfully!")
+        print("Pipeline completed successfully!")
         return df_final, forecasts
 
 
@@ -500,7 +501,7 @@ if __name__ == "__main__":
     df_final, forecasts = pipeline.run_complete_pipeline(num_forecast_days=14)
     
     # Display results
-    print("\n📊 Forecast Results:")
+    print("\nForecast Results:")
     for pollutant, forecast_values in forecasts.items():
         print(f"{pollutant}: {len(forecast_values)} forecast values")
         print(f"  Sample values: {forecast_values[:5]}...")
