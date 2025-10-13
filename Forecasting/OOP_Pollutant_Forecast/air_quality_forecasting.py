@@ -104,7 +104,7 @@ class DataPreprocessor:
     def remove_today_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """Remove today's data from the DataFrame."""
         today_wib = datetime.now(self.wib).date()
-        print(f"\nToday date: {today_wib}")
+        print(f"\nToday date is:{today_wib}")
         df['day'] = pd.to_datetime(df['day'], format='%Y-%m-%d')
         today = pd.to_datetime(today_wib)
         
@@ -439,6 +439,7 @@ class AirQualityPipeline:
         """Generate forecasts for all pollutants."""
         print(f"Generating {num_steps}-day forecasts...")
         forecast_dict = {}
+        scaler_dict = {}
         
         pollutants = df_final.columns.tolist()
         
@@ -465,14 +466,15 @@ class AirQualityPipeline:
             ]
             
             # Generate forecasts
-            forecasts, _, _, _ = self.forecaster.sequential_forecast_with_retrain(
+            forecasts, _, scalers, _ = self.forecaster.sequential_forecast_with_retrain(
                 pollutant, df_supervised, best_params_array, scaler, retrained_model,
                 num_steps=num_steps, lag_offsets=best_params_dict["lags"]
             )
             
             forecast_dict[pollutant] = forecasts
+            scaler_dict[pollutant] = scalers
         
-        return forecast_dict
+        return forecast_dict, scaler_dict
     
     def run_complete_pipeline(self, num_forecast_days: int = 14) -> Tuple[pd.DataFrame, Dict[str, List]]:
         """Run the complete air quality forecasting pipeline."""
@@ -485,27 +487,26 @@ class AirQualityPipeline:
         retrained_models = self.retrain_all_models(df_final)
         
         # Step 3: Generate forecasts
-        forecasts = self.generate_forecasts(df_final, num_forecast_days)
+        forecasts, scalers = self.generate_forecasts(df_final, num_forecast_days)
         
         print("Pipeline completed successfully!")
-        return df_final, forecasts
-
+        return df_final, forecasts, scalers
 
 # Example usage
 if __name__ == "__main__":
     # Initialize pipeline
     model_directory = "/content/drive/MyDrive/Pengmas/Model"
-    pipeline = AirQualityPipeline(model_directory, "/content/drive")
+    pipeline = AirQualityPipeline(model_directory)
     
     # Run complete pipeline
-    df_final, forecasts = pipeline.run_complete_pipeline(num_forecast_days=14)
+    df_final, forecasts, scalers = pipeline.run_complete_pipeline(num_forecast_days=14)
     
     # Display results
     print("\nForecast Results:")
     for pollutant, forecast_values in forecasts.items():
         print(f"{pollutant}: {len(forecast_values)} forecast values")
         print(f"  Sample values: {forecast_values[:5]}...")
-        
+
     # --- Save outputs ---
     output_dir = "/content/drive/MyDrive/Pengmas/Model/Output"
     os.makedirs(output_dir, exist_ok=True)
