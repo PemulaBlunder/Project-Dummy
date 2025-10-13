@@ -120,13 +120,16 @@ pip install -r requirements.txt
 ├── scaler_SO2.pkl
 ├── scaler_PM25.pkl
 ├── scaler_PM10.pkl
-└── Retrained/
+├── Retrained/
     ├── co_retrained.keras
     ├── no2_retrained.keras
     ├── o3_retrained.keras
     ├── so2_retrained.keras
     ├── pm25_retrained.keras
     └── pm10_retrained.keras
+└── Output/
+    ├── df_final.json
+    └── forecasts.json
 ```
 
 ## 🌟 Key Features
